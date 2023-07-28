@@ -1,0 +1,72 @@
+//Cycle detection in Directed graph
+
+#include <queue>
+#include <iostream>
+#include <vector>
+using namespace std;
+
+class Edge
+{
+public:
+    int src;
+    int dest;
+
+    Edge(int s, int d)
+    {
+        src = s;
+        dest = d;
+    }
+};
+
+void createGraph(vector<vector<Edge>>& graph)
+{
+    graph[0].push_back(Edge(0, 2));
+    graph[1].push_back(Edge(1, 0));
+    graph[2].push_back(Edge(2, 3));
+    graph[3].push_back(Edge(3, 0));
+}
+
+bool isCycleDetected(vector<vector<Edge>>& graph, vector<bool>& vis, int curr, vector<bool>& rec)
+{
+    vis[curr] = true;
+    rec[curr] = true;
+
+    for (int i = 0; i < graph[curr].size(); i++)
+    {
+        Edge e = graph[curr][i];
+        if (rec[e.dest])
+            return true;
+        else if (!vis[e.dest] && isCycleDetected(graph, vis, e.dest, rec))
+            return true;
+    }
+
+    rec[curr] = false;
+    return false;
+}
+
+int main()
+{
+    bool hasCycle;
+    int V = 4;
+    vector<vector<Edge>> graph(V, vector<Edge>());
+    createGraph(graph);
+    vector<bool> vis(V, false);
+    vector<bool> rec(V, false);
+    //connected graph
+    // bool hasCycle = isCycleDetected(graph, vis, 0, rec);
+    
+    //not-connected graph
+    for(int i=0;i<V;i++){
+        if(!vis[i]){
+            bool hasCycle = isCycleDetected(graph, vis, i, rec);
+            break;
+        }
+    }
+
+    if (hasCycle)
+        cout << "Graph contains a cycle." << endl;
+    else
+        cout << "Graph does not contain a cycle." << endl;
+
+    return 0;
+}

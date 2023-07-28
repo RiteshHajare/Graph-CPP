@@ -1,0 +1,88 @@
+#include <queue>
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <climits>
+using namespace std;
+
+class Edge
+{
+public:
+    int src;
+    int dest;
+
+    Edge(int s, int d)
+    {
+        src = s;
+        dest = d;
+    }
+};
+
+void createGraph(vector<vector<Edge>>& graph)
+{
+    // for(int i=0;i<graph.size();i++){
+    //     graph[i] =vector<Edge>();
+    // }
+    graph[0].push_back(Edge(0,1));
+    graph[0].push_back(Edge(0,2));
+    graph[0].push_back(Edge(0,3));
+    graph[1].push_back(Edge(1,0));
+    graph[1].push_back(Edge(1,2));
+    graph[2].push_back(Edge(2,0));
+    graph[2].push_back(Edge(2,1));
+    graph[3].push_back(Edge(3,0));
+    graph[3].push_back(Edge(3,4));
+    // graph[3].push_back(Edge(3,5));
+    graph[4].push_back(Edge(4,3));
+    // graph[4].push_back(Edge(4,5));
+    // graph[5].push_back(Edge(5,3));
+    // graph[5].push_back(Edge(5,4));
+}
+
+
+
+
+
+void dfs(vector<vector<Edge>> graph,vector<int>& dt,vector<int>& low,int& t,int curr,vector<bool>& vis,int par){
+    vis[curr] = true;
+    dt[curr] = low[curr] = ++t;
+    
+    for(int i=0;i<graph[curr].size();i++){
+        Edge e = graph[curr][i];
+        if(e.dest==par) continue;
+        else if(!vis[e.dest]){
+            dfs(graph,dt,low,t,e.dest,vis,curr);
+            low[curr] = min(low[curr],low[e.dest]);
+            
+            if(dt[curr]<low[e.dest]){
+                cout<<"Bridge: "<<curr<<"---"<<e.dest<<endl;
+            }
+        }else if(vis[e.dest]){
+            low[curr] = min(low[curr],dt[e.dest]);
+        }
+    }
+}
+//O(V+E);
+void getBridge(vector<vector<Edge>> graph,int V){
+    vector<bool> vis(V,false);
+    vector<int> dt(V, -1); 
+    vector<int> low(V, -1); 
+    int t = 0;
+    
+    for(int i=0;i<V;i++){
+        if(!vis[i]){
+            dfs(graph,dt,low,t,i,vis,-1);
+        }
+    }
+}
+
+int main()
+{
+    int V = 6;
+    vector<vector<Edge>> graph(V,vector<Edge>());
+    createGraph(graph);
+    
+    getBridge(graph,V);
+    return 0;
+   
+}

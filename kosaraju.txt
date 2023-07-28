@@ -1,0 +1,101 @@
+// Kosaraju algorithm
+#include <queue>
+#include <iostream>
+#include <stack>
+#include <vector>
+#include <climits>
+using namespace std;
+
+class Edge
+{
+public:
+    int src;
+    int dest;
+
+    Edge(int s, int d)
+    {
+        src = s;
+        dest = d;
+    }
+};
+
+void createGraph(vector<vector<Edge>>& graph)
+{
+    // for(int i=0;i<graph.size();i++){
+    //     graph[i] =vector<Edge>();
+    // }
+    graph[0].push_back(Edge(0,2));
+    graph[0].push_back(Edge(0,3));
+    graph[1].push_back(Edge(1,0));
+    graph[2].push_back(Edge(2,1));
+    graph[3].push_back(Edge(3,4));
+}
+
+
+
+void topSort(vector<vector<Edge>> graph,vector<bool>& vis,int curr,stack<int>& s){
+    vis[curr] = true;
+    
+    for(int i=0;i<graph[curr].size();i++){
+        Edge e = graph[curr][i];
+        if(!vis[e.dest]){
+            topSort(graph,vis,e.dest,s);
+        }
+    }
+    s.push(curr);
+}
+
+void dfs(vector<vector<Edge>> graph,int curr,vector<bool>& vis){
+    vis[curr] = true;
+    cout<<curr<<" ";
+    
+    for(int i=0;i<graph[curr].size();i++){
+        Edge e = graph[curr][i];
+        if(!vis[e.dest]){
+            dfs(graph,e.dest,vis);
+        }
+    }
+}
+
+void kosaraju(vector<vector<Edge>> graph,int V){
+    stack<int> s;
+    vector<bool> vis(V,false);
+    for(int i=0;i<V;i++){
+        if(!vis[i]){
+            topSort(graph,vis,i,s);
+        }
+    }
+    
+    vector<vector<Edge>> graphT(V,vector<Edge>()); 
+    
+   
+    std::fill(vis.begin(), vis.end(), false);
+    
+    for(int i=0;i<V;i++){
+        for(int j=0;j<graph[i].size();j++){
+            Edge e = graph[i][j];
+            graphT[e.dest].push_back(Edge(e.dest,e.src));
+        }
+    }
+    
+    while(!s.empty()){
+        int curr = s.top();
+        s.pop();
+        if(!vis[curr]){
+            dfs(graphT,curr,vis);
+            cout<<endl;
+        }
+    }
+   
+}
+
+int main()
+{
+    int V = 5;
+    vector<vector<Edge>> graph(V,vector<Edge>());
+    createGraph(graph);
+    
+    kosaraju(graph,V);
+    return 0;
+   
+}

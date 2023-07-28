@@ -1,0 +1,68 @@
+#include <queue>
+#include <iostream>
+#include <vector>
+#include <climits>
+using namespace std;
+
+class Edge
+{
+public:
+    int src;
+    int dest;
+    int wt;
+
+    Edge(int s, int d,int w)
+    {
+        src = s;
+        dest = d;
+        wt=w;
+    }
+};
+
+void createGraph(vector<vector<Edge>>& graph)
+{
+    // for(int i=0;i<graph.size();i++){
+    //     graph[i] =vector<Edge>();
+    // }
+    graph[0].push_back( Edge(0,1,2));
+    graph[0].push_back( Edge(0,2,4));
+    graph[1].push_back( Edge(1,2,-4));
+    graph[2].push_back( Edge(2,3,2));
+    graph[3].push_back( Edge(3,4,4));
+    graph[4].push_back( Edge(4,1,-1));
+}
+
+void bellmanFord(vector<vector<Edge>> graph,int V,int src){
+    vector<int> dist(V,INT_MAX);
+    dist[src]=0;
+    
+    for(int i=0;i<V-1;i++){
+        for(int j=0;j<V;j++){
+            for(int k=0;k<graph[j].size();k++){
+                Edge e = graph[j][k];
+                int u = e.src;
+                int v = e.dest;
+                
+                if(dist[u]+e.wt<dist[v]){
+                    dist[v] = dist[u]+e.wt;
+                }
+            }
+        }
+    }
+    
+    for(int i=0;i<V;i++){
+        cout<<dist[i]<<" ";
+    }
+}
+
+int main()
+{
+    int V = 5;
+    vector<vector<Edge>> graph(V,vector<Edge>());
+    createGraph(graph);
+    vector<bool> vis(V,false);
+    
+    bellmanFord(graph,V,0);
+    return 0;
+   
+}
